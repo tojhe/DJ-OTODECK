@@ -19,6 +19,15 @@ MainComponent::MainComponent()
         // Specify the number of input and output channels that we want to open
         setAudioChannels (2, 2);
     }
+
+    addAndMakeVisible(playButton);
+    addAndMakeVisible(stopButton);
+
+    addAndMakeVisible(volSlider);
+
+    playButton.addListener(this);
+    stopButton.addListener(this);
+    volSlider.addListener(this);
 }
 
 MainComponent::~MainComponent()
@@ -37,6 +46,8 @@ void MainComponent::prepareToPlay (int samplesPerBlockExpected, double sampleRat
     // but be careful - it will be called on the audio thread, not the GUI thread.
 
     // For more details, see the help for AudioProcessor::prepareToPlay()
+    phase = 0.0;
+    dphase = 0.0001;
 }
 
 void MainComponent::getNextAudioBlock (const juce::AudioSourceChannelInfo& bufferToFill)
@@ -47,7 +58,22 @@ void MainComponent::getNextAudioBlock (const juce::AudioSourceChannelInfo& buffe
 
     // Right now we are not producing any data, in which case we need to clear the buffer
     // (to prevent the output of random noise)
-    bufferToFill.clearActiveBufferRegion();
+    auto* leftChan = bufferToFill.buffer->getWritePointer(0, 
+                                                        bufferToFill.startSample);
+    auto* rightChan = bufferToFill.buffer->getWritePointer(1, 
+                                                        bufferToFill.startSample);                                                        
+    
+    for (auto i=0; i < bufferToFill.numSamples ; ++i)
+    {
+        // double sample = rand.nextDouble() * 0.25;
+        // double sample = fmod(phase, 0.2);
+        double sample = sin(phase) * 0.01;
+        leftChan[i] = sample;
+        rightChan[i] = sample;
+
+        phase += dphase;
+    }
+    // bufferToFill.clearActiveBufferRegion();
 }
 
 void MainComponent::releaseResources()
@@ -65,6 +91,9 @@ void MainComponent::paint (juce::Graphics& g)
     g.fillAll (getLookAndFeel().findColour (juce::ResizableWindow::backgroundColourId));
 
     // You can add your drawing code here!
+    // g.setFont(20.0f);
+    // g.drawText ("Hello from Singapore", getLocalBounds(),
+    //            juce::Justification::centred, true);
 }
 
 void MainComponent::resized()
@@ -72,4 +101,32 @@ void MainComponent::resized()
     // This is called when the MainContentComponent is resized.
     // If you add any child components, this is where you should
     // update their positions.
+
+    double rowH = getHeight() / 5;
+    playButton.setBounds(0, 0, getWidth(), rowH);
+    stopButton.setBounds(0, rowH, getWidth(), rowH);
+    
+    volSlider.setBounds(0, rowH * 2 , getWidth(), rowH);
+}
+
+void MainComponent::buttonClicked(juce::Button* button)
+{   
+    // Use pointer and memory address match
+    if (button == &playButton)
+    {
+        std::cout << "Play button was clicked " << std::endl;
+    }
+    if (button == &stopButton)
+    {
+        std::cout << "Stop button was clicked " << std::endl;
+    }
+}
+
+void MainComponent::sliderValueChanged(juce::Slider* slider)
+{
+    if (slider == &volSlider)
+    {
+        std::cout << "vol slider moved "  << slider->getValue() << std::endl;
+        dphase = volSlider.getValue() * 0.001;
+    }
 }
