@@ -1,6 +1,7 @@
 #pragma once
 
 #include <JuceHeader.h>
+#include "DJAudioPlayer.h"
 
 //==============================================================================
 /*
@@ -39,19 +40,11 @@ private:
     juce::TextButton playButton{"PLAY"};
     juce::TextButton stopButton{"STOP"};
     juce::TextButton loadButton{"LOAD"};
+    
     juce::Slider volSlider;
-
-    juce::Random rand;
-
-    double phase;
-    double dphase;
-
-    juce::AudioFormatManager formatManager;
-    // use smart pointer
-    std::unique_ptr<juce::AudioFormatReaderSource> readerSource;
-    juce::AudioTransportSource transportSource;
-
-    void loadURL(juce::URL audioURL);
+    juce::Slider speedSlider;
+    juce::Slider posSlider;
+    DJAudioPlayer player1;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (MainComponent)
 };
