@@ -20,23 +20,9 @@ MainComponent::MainComponent()
         setAudioChannels (2, 2);
     }
 
-    addAndMakeVisible(playButton);
-    addAndMakeVisible(stopButton);
-    addAndMakeVisible(loadButton);
+    addAndMakeVisible(deckGUI1);
+    addAndMakeVisible(deckGUI2);
 
-    addAndMakeVisible(volSlider);
-    addAndMakeVisible(speedSlider);
-    addAndMakeVisible(posSlider);
-
-    playButton.addListener(this);
-    stopButton.addListener(this);
-    loadButton.addListener(this);
-    volSlider.addListener(this);
-    speedSlider.addListener(this);
-    posSlider.addListener(this);
-
-    volSlider.setRange(0.0, 1.0);
-    posSlider.setRange(0.0, 1.0);
 }
 
 MainComponent::~MainComponent()
@@ -56,8 +42,14 @@ void MainComponent::prepareToPlay (int samplesPerBlockExpected, double sampleRat
 
     // For more details, see the help for AudioProcessor::prepareToPlay()
     
-
     player1.prepareToPlay(samplesPerBlockExpected, sampleRate);
+    player2.prepareToPlay(samplesPerBlockExpected, sampleRate);
+
+    // for mixing the source
+    mixerSource.prepareToPlay(samplesPerBlockExpected, sampleRate);
+
+    mixerSource.addInputSource(&player1, false);
+    mixerSource.addInputSource(&player2, false);
 }
 
 /*
@@ -96,8 +88,7 @@ void MainComponent::getNextAudioBlock (const juce::AudioSourceChannelInfo& buffe
 
     // Right now we are not producing any data, in which case we need to clear the buffer
     // (to prevent the output of random noise)
-
-    player1.getNextAudioBlock(bufferToFill);
+    mixerSource.getNextAudioBlock(bufferToFill);
 }
 
 
@@ -108,6 +99,8 @@ void MainComponent::releaseResources()
 
     // For more details, see the help for AudioProcessor::releaseResources()
     player1.releaseResources();
+    player2.releaseResources();
+    mixerSource.releaseResources();
 }
 
 //==============================================================================
@@ -127,62 +120,7 @@ void MainComponent::resized()
     // This is called when the MainContentComponent is resized.
     // If you add any child components, this is where you should
     // update their positions.
-
-    double rowH = getHeight() / 6;
-
-    playButton.setBounds(0, 0, getWidth(), rowH);
-    stopButton.setBounds(0, rowH, getWidth(), rowH);
-
-    volSlider.setBounds(0, rowH * 2, getWidth(), rowH);
-    speedSlider.setBounds(0, rowH * 3, getWidth(), rowH);
-    posSlider.setBounds(0, rowH * 4, getWidth(), rowH);
-    
-    loadButton.setBounds(0, rowH * 5, getWidth(), rowH);    
+    deckGUI1.setBounds(0, 0, getWidth()/2, getHeight());
+    deckGUI2.setBounds(getWidth()/2, 0, getWidth()/2, getHeight());
 }
 
-void MainComponent::buttonClicked(juce::Button* button)
-{   
-    // Use pointer and memory address match
-    if (button == &playButton)
-    {
-        std::cout << "Play button was clicked " << std::endl;
-        player1.start();
-    }
-    if (button == &stopButton)
-    {
-        std::cout << "Stop button was clicked " << std::endl;
-        player1.stop();
-    }
-    if (button == &loadButton)
-    {
-        std::cout << "Load button was clicked " << std::endl;
-        juce::FileChooser chooser{"Select a file..."};
-        if (chooser.browseForFileToOpen())
-        {
-            player1.loadURL(juce::URL {chooser.getResult()});
-        }
-    }
-}
-
-void MainComponent::sliderValueChanged(juce::Slider* slider)
-{
-    if (slider == &volSlider)
-    {
-        std::cout << "vol slider moved "  << slider->getValue() << std::endl;
-        player1.setGain(slider->getValue());
-        // dphase = volSlider.getValue() * 0.001;
-    }
-    if (slider == &speedSlider)
-    {
-        std::cout << "speed slider moved "  << slider->getValue() << std::endl;
-        // resampleSource.setResamplingRatio(slider->getValue());
-        // dphase = volSlider.getValue() * 0.001;
-        player1.setSpeed(slider->getValue());
-    }
-
-    if (slider == &posSlider)
-    {
-        std::cout << "speed slider moved "  << slider->getValue() << std::endl;
-        player1.setPositionRelative(slider->getValue());
-    }
-}
