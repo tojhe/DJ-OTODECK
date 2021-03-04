@@ -91,7 +91,7 @@ void DJAudioPlayer::setPosition(double posInSecs)
 
 void DJAudioPlayer::setPositionRelative(double pos)
 {
-  if (gain < 0 || gain > 1.0)
+  if (pos < 0 || pos > 1.0)
   {
     std::cout << "DJAudioPlayer::setPos posRelative should be between 0 and 1" << std::endl;
   }
