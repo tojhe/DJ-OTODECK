@@ -18,7 +18,8 @@
 */
 class DeckGUI  : public juce::Component,
                  public juce::Button::Listener,
-                 public juce::Slider::Listener
+                 public juce::Slider::Listener,
+                 public juce::FileDragAndDropTarget
 {
 public:
     DeckGUI(DJAudioPlayer* player);
@@ -32,6 +33,9 @@ public:
     
     /** implement Slider::Listener */
     void sliderValueChanged (juce::Slider *slider) override;
+
+    bool isInterestedInFileDrag (const StringArray &files) override;
+    void filesDropped (const StringArray &files, int x, int y) override;
  
 private:
     juce::TextButton playButton{"PLAY"};

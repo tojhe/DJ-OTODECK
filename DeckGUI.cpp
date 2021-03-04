@@ -123,3 +123,18 @@ void DeckGUI::sliderValueChanged(juce::Slider* slider)
         player->setPositionRelative(slider->getValue());
     }
 }
+
+bool DeckGUI::isInterestedInFileDrag (const StringArray &files)
+{
+  std::cout << "DeckGUI::isInterestedInFileDrag" << std::endl;
+  return true;
+}
+
+void DeckGUI::filesDropped (const StringArray &files, int x, int y)
+{
+  std::cout << "DeckGUI::filesDropped" << std::endl;
+  if (files.size() == 1)
+  {
+    player->loadURL(juce::URL{juce::File{files[0]}});
+  }
+}
