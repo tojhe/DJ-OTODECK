@@ -31,10 +31,13 @@ private:
     //==============================================================================
     // Your private member variables go here...
 
+    juce::AudioFormatManager formatManager;
+    juce::AudioThumbnailCache thumbCache{100};
+
     DJAudioPlayer player1;
-    DeckGUI deckGUI1 {&player1};
+    DeckGUI deckGUI1 {&player1, formatManager, thumbCache};
     DJAudioPlayer player2;
-    DeckGUI deckGUI2 {&player2};
+    DeckGUI deckGUI2 {&player2, formatManager, thumbCache};
 
     MixerAudioSource mixerSource;
 
