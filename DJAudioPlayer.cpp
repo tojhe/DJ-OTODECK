@@ -10,7 +10,8 @@
 
 #include "DJAudioPlayer.h"
 
-DJAudioPlayer::DJAudioPlayer()
+DJAudioPlayer::DJAudioPlayer(juce::AudioFormatManager& _formatManager)
+: formatManager(_formatManager)
 {
 
 }
@@ -23,8 +24,6 @@ DJAudioPlayer::~DJAudioPlayer()
 //==============================================================================
 void DJAudioPlayer::prepareToPlay (int samplesPerBlockExpected, double sampleRate)
 {
-  formatManager.registerBasicFormats();
-
   transportSource.prepareToPlay(
     samplesPerBlockExpected,
     sampleRate
@@ -109,4 +108,9 @@ void DJAudioPlayer::start()
 void DJAudioPlayer::stop()
 {
   transportSource.stop();
+}
+
+double DJAudioPlayer::getPositionRelative()
+{
+  return transportSource.getCurrentPosition() / transportSource.getLengthInSeconds();
 }
