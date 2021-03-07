@@ -30,10 +30,14 @@ public:
 
     void loadURL (juce::URL audioURL);
 
+    /** set the relative position of the playhead**/
+    void setPositionRelative(double pos);
+
 private:
 
     juce::AudioThumbnail audioThumb;
     bool fileLoaded;
+    double position;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (WaveformDisplay)
 };

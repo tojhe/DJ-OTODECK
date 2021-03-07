@@ -15,7 +15,8 @@
 WaveformDisplay::WaveformDisplay(juce::AudioFormatManager& formatManagerToUse,
                                  juce::AudioThumbnailCache& cacheToUse) :
                                  audioThumb(1000, formatManagerToUse, cacheToUse),
-                                 fileLoaded(false)
+                                 fileLoaded(false),
+                                 position(0.0)
 {
     // In your constructor, you should add any child components, and
     // initialise any special settings that your component needs.
@@ -49,6 +50,9 @@ void WaveformDisplay::paint (juce::Graphics& g)
                             audioThumb.getTotalLength(),
                             0,
                             1.0f);
+      // set playbar on timer
+      g.setColour(juce::Colours::lightgreen);
+      g.drawRect(position * getWidth(),0, getWidth() / 80, getHeight());
     }
     else {g.setFont (20.0f);
           g.drawText ("File not loaded...", getLocalBounds(),
@@ -83,4 +87,13 @@ void WaveformDisplay::changeListenerCallback (juce::ChangeBroadcaster *source)
 {
   std::cout << "wfd: change received" << std::endl;
   repaint();
+}
+
+void WaveformDisplay::setPositionRelative(double pos)
+{
+  if (pos != position)
+  {
+    position = pos;
+    repaint();
+  }
 }
