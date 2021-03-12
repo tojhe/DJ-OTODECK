@@ -23,6 +23,8 @@ MainComponent::MainComponent()
     addAndMakeVisible(deckGUI1);
     addAndMakeVisible(deckGUI2);
 
+    addAndMakeVisible(playlistComponent);
+
     formatManager.registerBasicFormats();
 }
 
@@ -121,7 +123,9 @@ void MainComponent::resized()
     // This is called when the MainContentComponent is resized.
     // If you add any child components, this is where you should
     // update their positions.
-    deckGUI1.setBounds(0, 0, getWidth()/2, getHeight());
-    deckGUI2.setBounds(getWidth()/2, 0, getWidth()/2, getHeight());
+    deckGUI1.setBounds(0, 0, getWidth()/2, getHeight()/2 );
+    deckGUI2.setBounds(getWidth()/2, 0, getWidth()/2, getHeight()/2);
+
+    playlistComponent.setBounds(0, getHeight()/2, getWidth(), getHeight()/2);
 }
 
