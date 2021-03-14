@@ -42,6 +42,8 @@ public:
     void filesDropped (const StringArray &files, int x, int y) override;
 
     void timerCallback() override;
+
+    void loadTrack(juce::URL sourceURL);
  
 private:
     juce::TextButton playButton{"PLAY"};

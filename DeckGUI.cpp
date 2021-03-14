@@ -156,3 +156,9 @@ void DeckGUI::timerCallback()
 {
     waveformDisplay.setPositionRelative(player->getPositionRelative());
 }
+
+void DeckGUI::loadTrack(juce::URL sourceURL)
+{
+    player->loadURL(sourceURL);
+    waveformDisplay.loadURL(sourceURL);
+}
