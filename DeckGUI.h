@@ -13,6 +13,7 @@
 #include <JuceHeader.h>
 #include "DJAudioPlayer.h"
 #include "WaveformDisplay.h"
+#include "ReverbKnobs.h"
 
 //==============================================================================
 /*
@@ -26,7 +27,8 @@ class DeckGUI  : public juce::Component,
 public:
     DeckGUI(DJAudioPlayer* player, 
             juce::AudioFormatManager& formatManagerToUse,
-            juce::AudioThumbnailCache& cacheToUse);
+            juce::AudioThumbnailCache& cacheToUse,
+            ReverbKnobs* reverbKnobs);
     ~DeckGUI() override;
 
     void paint (juce::Graphics&) override;
@@ -53,10 +55,13 @@ private:
     juce::Slider volSlider;
     juce::Slider speedSlider;
     juce::Slider posSlider;
+    // juce::Slider roomSizeSlider;
 
     DJAudioPlayer* player;
 
     WaveformDisplay waveformDisplay;
+    
+    ReverbKnobs* reverbKnobs;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (DeckGUI)
 };

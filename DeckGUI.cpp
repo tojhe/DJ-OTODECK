@@ -14,9 +14,11 @@
 //==============================================================================
 DeckGUI::DeckGUI(DJAudioPlayer* _player,
                 juce::AudioFormatManager& formatManagerToUse,
-                juce::AudioThumbnailCache& cacheToUse
+                juce::AudioThumbnailCache& cacheToUse,
+                ReverbKnobs* _reverbKnobs
                 ) : player(_player),
-                    waveformDisplay(formatManagerToUse, cacheToUse)
+                    waveformDisplay(formatManagerToUse, cacheToUse),
+                    reverbKnobs(_reverbKnobs)
 {
     // In your constructor, you should add any child components, and
     // initialise any special settings that your component needs.
@@ -28,8 +30,10 @@ DeckGUI::DeckGUI(DJAudioPlayer* _player,
     addAndMakeVisible(volSlider);
     addAndMakeVisible(speedSlider);
     addAndMakeVisible(posSlider);
+    // addAndMakeVisible(roomSizeSlider);
 
     addAndMakeVisible(waveformDisplay);
+    addAndMakeVisible(reverbKnobs);
 
     playButton.addListener(this);
     stopButton.addListener(this);
@@ -37,10 +41,31 @@ DeckGUI::DeckGUI(DJAudioPlayer* _player,
     volSlider.addListener(this);
     speedSlider.addListener(this);
     posSlider.addListener(this);
+    // roomSizeSlider.addListener(this);
 
     volSlider.setRange(0.0, 1.0);
     speedSlider.setRange(0.0, 100.0);
     posSlider.setRange(0.0, 1.0);
+    // roomSizeSlider.setRange(0.0, 1.0);
+
+    volSlider.setSliderStyle (juce::Slider::LinearVertical);
+    speedSlider.setSliderStyle (juce::Slider::LinearVertical);
+    // roomSizeSlider.setSliderStyle (juce::Slider::Rotary);
+
+    posSlider.setSliderStyle (juce::Slider::LinearHorizontal);
+    
+    volSlider.setTextValueSuffix(" Volume");
+    speedSlider.setTextValueSuffix("x Speed");
+    posSlider.setTextValueSuffix("pos");
+
+    volSlider.setNumDecimalPlacesToDisplay(4);
+    speedSlider.setNumDecimalPlacesToDisplay(4);
+    posSlider.setNumDecimalPlacesToDisplay(4);
+    // roomSizeSlider.setNumDecimalPlacesToDisplay(4);
+
+    volSlider.setTextBoxStyle(juce::Slider::TextBoxBelow, false, 100, 20);
+    speedSlider.setTextBoxStyle(juce::Slider::TextBoxBelow, false, 100, 20);
+    // roomSizeSlider.setTextBoxStyle(juce::Slider::TextBoxBelow, false, 100, 20);
 
     startTimer(500);
 }
@@ -80,13 +105,20 @@ void DeckGUI::resized()
     playButton.setBounds(0, 0, getWidth(), rowH);
     stopButton.setBounds(0, rowH, getWidth(), rowH);
 
-    volSlider.setBounds(0, rowH * 2, getWidth(), rowH);
-    speedSlider.setBounds(0, rowH * 3, getWidth(), rowH);
-    posSlider.setBounds(0, rowH * 4, getWidth(), rowH);
+    volSlider.setBounds(0, rowH * 2, getWidth()/3, rowH * 3);
+    speedSlider.setBounds(getWidth() * 1/3, rowH * 2, getWidth()/3, rowH * 3);
+    // roomSizeSlider.setBounds(getWidth() * 2/3, rowH * 2, getWidth()/3, rowH);
 
-    waveformDisplay.setBounds(0, rowH * 5, getWidth(), rowH * 2);
+    // volSlider.setBounds(0, rowH * 2, getWidth(), rowH);
+    // speedSlider.setBounds(0, rowH * 3, getWidth(), rowH);
+    // posSlider.setBounds(0, rowH * 4, getWidth(), rowH);
+
+    posSlider.setBounds(0, rowH * 5, getWidth(), rowH);    
+    waveformDisplay.setBounds(0, rowH * 6, getWidth(), rowH * 2);
+    reverbKnobs->setBounds(getWidth() * 2/3, rowH * 2, getWidth()/3, rowH * 3);
     
-    loadButton.setBounds(0, rowH * 7, getWidth(), rowH);    
+    
+    // loadButton.setBounds(0, rowH * 7, getWidth(), rowH);    
 }
 
 void DeckGUI::buttonClicked(juce::Button* button)
@@ -128,12 +160,16 @@ void DeckGUI::sliderValueChanged(juce::Slider* slider)
         // dphase = volSlider.getValue() * 0.001;
         player->setSpeed(slider->getValue());
     }
-
     if (slider == &posSlider)
     {
         std::cout << "speed slider moved "  << slider->getValue() << std::endl;
         player->setPositionRelative(slider->getValue());
     }
+    // if (slider == &roomSizeSlider)    
+    // {   
+    //     std::cout << "rotary slider moved "  << slider->getValue() << std::endl;
+    //     player->setRoomSize(float(slider->getValue()));
+    // }
 }
 
 bool DeckGUI::isInterestedInFileDrag (const StringArray &files)
