@@ -28,8 +28,10 @@ class DJAudioPlayer : public juce::AudioSource {
     void setPosition(double posInSecs);
     void setPositionRelative(double pos);
 
+
     /** get the relative position of the playhead*/
     double getPositionRelative();
+    double getLengthInSeconds();
 
     void start();
     void stop();
