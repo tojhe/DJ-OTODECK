@@ -4,6 +4,7 @@
 #include "DJAudioPlayer.h"
 #include "DeckGUI.h"
 #include "PlaylistComponent.h"
+#include "ReverbKnobs.h"
 
 //==============================================================================
 /*
@@ -36,9 +37,11 @@ private:
     juce::AudioThumbnailCache thumbCache{100};
 
     DJAudioPlayer player1{formatManager};
-    DeckGUI deckGUI1 {&player1, formatManager, thumbCache};
+    ReverbKnobs reverbKnobs1{&player1};
+    DeckGUI deckGUI1 {&player1, formatManager, thumbCache, &reverbKnobs1};
     DJAudioPlayer player2{formatManager};
-    DeckGUI deckGUI2 {&player2, formatManager, thumbCache};
+    ReverbKnobs reverbKnobs2{&player2};
+    DeckGUI deckGUI2 {&player2, formatManager, thumbCache, &reverbKnobs2};
 
     MixerAudioSource mixerSource;
 
