@@ -11,18 +11,28 @@
 #pragma once
 
 #include <JuceHeader.h>
+#include "AudioTrack.h"
+#include "DJAudioPlayer.h"
+#include "DeckGUI.h"
 #include <vector>
 #include <string>
+#include <cmath>
+#include <fstream>
+#include <iostream>
+#include <stdio.h>
 
 //==============================================================================
 /*
 */
 class PlaylistComponent  : public juce::Component,
                            public juce::TableListBoxModel,
-                           public juce::Button::Listener
+                           public juce::Button::Listener,
+                           public juce::TextEditor::Listener
 {
 public:
-    PlaylistComponent();
+    PlaylistComponent(DJAudioPlayer* player,
+                      DeckGUI* deckGUI1,
+                      DeckGUI* deckGUI2);
     ~PlaylistComponent() override;
 
     void paint (juce::Graphics&) override;
@@ -52,8 +62,21 @@ public:
 
 private:
 
-    juce::TableListBox tableComponent;
-    std::vector<std::string> trackTitles;
+    void saveTracks();
+    void loadTracks();
+    std::string secondsToMinutes(double seconds);
+    void searchPlaylist(juce::String inputText);
+    void handleTrackButtons(juce::String buttonClicked, int id);
+
+    juce::TableListBox playlist;
+
+    std::vector<AudioTrack> tracks;
+    DJAudioPlayer* player;
+    DeckGUI* deckGUI1;
+    DeckGUI* deckGUI2;
+
+    juce::TextButton importButton{"IMPORT TRACKS"};
+    juce::TextEditor searchField;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (PlaylistComponent)
 };
