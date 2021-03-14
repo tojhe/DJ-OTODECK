@@ -5,7 +5,7 @@ MainComponent::MainComponent()
 {
     // Make sure you set the size of the component after
     // you add any child components.
-    setSize (800, 600);
+    setSize (1200, 600);
 
     // Some platforms require permissions to open input channels so request that here
     if (juce::RuntimePermissions::isRequired (juce::RuntimePermissions::recordAudio)
@@ -123,9 +123,14 @@ void MainComponent::resized()
     // This is called when the MainContentComponent is resized.
     // If you add any child components, this is where you should
     // update their positions.
-    deckGUI1.setBounds(0, 0, getWidth()/2, getHeight()/2 );
-    deckGUI2.setBounds(getWidth()/2, 0, getWidth()/2, getHeight()/2);
+    // deckGUI1.setBounds(0, 0, getWidth()/2, getHeight()/2 );
+    // deckGUI2.setBounds(getWidth()/2, 0, getWidth()/2, getHeight()/2);
 
-    playlistComponent.setBounds(0, getHeight()/2, getWidth(), getHeight()/2);
+    // playlistComponent.setBounds(0, getHeight()/2, getWidth(), getHeight()/2);
+
+    deckGUI1.setBounds(getWidth() * 1/3, 0, getWidth()/3, getHeight());
+    deckGUI2.setBounds(getWidth() * 2/3, 0, getWidth()/3, getHeight());
+
+    playlistComponent.setBounds(0, 0, getWidth()/3, getHeight());
 }
 
