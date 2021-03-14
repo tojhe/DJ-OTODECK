@@ -32,17 +32,23 @@ void DJAudioPlayer::prepareToPlay (int samplesPerBlockExpected, double sampleRat
     samplesPerBlockExpected,
     sampleRate
     );
+  reverbSource.prepareToPlay(
+    samplesPerBlockExpected,
+    sampleRate
+  );
 }
 
 void DJAudioPlayer::getNextAudioBlock (const juce::AudioSourceChannelInfo& bufferToFill)
 {
-  resampleSource.getNextAudioBlock(bufferToFill);
+  // resampleSource.getNextAudioBlock(bufferToFill);
+  reverbSource.getNextAudioBlock(bufferToFill);
 }
 
 void DJAudioPlayer::releaseResources()
 {
   transportSource.releaseResources();
   resampleSource.releaseResources();
+  reverbSource.releaseResources();
 }
 
 void DJAudioPlayer::loadURL(juce::URL audioURL)
@@ -98,6 +104,39 @@ void DJAudioPlayer::setPositionRelative(double pos)
     double posInSecs = transportSource.getLengthInSeconds() * pos;
     setPosition(posInSecs);
   }
+}
+
+void DJAudioPlayer::setRoomSize(float size)
+{
+  audioReverbParameters.roomSize = size;
+  reverbSource.setParameters(audioReverbParameters);
+}
+
+void DJAudioPlayer::setDamping(float damp)
+{
+  audioReverbParameters.damping = damp;
+  reverbSource.setParameters(audioReverbParameters);
+}
+void DJAudioPlayer::setWetLevel(float wet)
+{
+  audioReverbParameters.wetLevel = wet;
+  reverbSource.setParameters(audioReverbParameters);
+}
+void DJAudioPlayer::setDryLevel(float dry)
+{
+  audioReverbParameters.dryLevel = dry;
+  reverbSource.setParameters(audioReverbParameters);
+}
+void DJAudioPlayer::setWidthLevel(float width)
+{
+  audioReverbParameters.width = width;
+  reverbSource.setParameters(audioReverbParameters);
+}
+
+void DJAudioPlayer::setFreezeLevel(float freeze)
+{
+  audioReverbParameters.freezeMode = freeze;
+  reverbSource.setParameters(audioReverbParameters);
 }
 
 void DJAudioPlayer::start()

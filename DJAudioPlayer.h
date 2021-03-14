@@ -11,6 +11,7 @@
 #pragma once
 
 #include <JuceHeader.h>
+#include <vector>
 
 class DJAudioPlayer : public juce::AudioSource {
   public:
@@ -27,7 +28,12 @@ class DJAudioPlayer : public juce::AudioSource {
     void setSpeed(double ratio);
     void setPosition(double posInSecs);
     void setPositionRelative(double pos);
-
+    void setRoomSize(float size);
+    void setDamping(float damp);
+    void setWetLevel(float wet);
+    void setDryLevel(float dry);
+    void setWidthLevel(float width);
+    void setFreezeLevel(float freeze);
 
     /** get the relative position of the playhead*/
     double getPositionRelative();
@@ -41,4 +47,7 @@ class DJAudioPlayer : public juce::AudioSource {
     std::unique_ptr<juce::AudioFormatReaderSource> readerSource;
     juce::AudioTransportSource transportSource;
     juce::ResamplingAudioSource resampleSource {&transportSource, false, 2};
+    juce::ReverbAudioSource reverbSource {&resampleSource, false};
+
+    juce::Reverb::Parameters audioReverbParameters;
 };
