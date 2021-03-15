@@ -12,6 +12,7 @@
 
 #include <JuceHeader.h>
 #include "DJAudioPlayer.h"
+#include <string>
 
 //==============================================================================
 /*
@@ -38,9 +39,8 @@ private:
     juce::Slider widthLevelSlider;
     juce::Slider freezeSlider;
 
-    // juce::Reverb::Parameters reverbParameters;
-
-    void configureSlider(juce::Slider* slider);
+    /** Configure knob slider on initialization */
+    void configureSlider(juce::Slider* slider, std::string suffix, float startValue);
 
     DJAudioPlayer* player;
 

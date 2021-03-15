@@ -17,12 +17,12 @@ ReverbKnobs::ReverbKnobs(DJAudioPlayer* _player) : player(_player)
     // In your constructor, you should add any child components, and
     // initialise any special settings that your component needs.
 
-  configureSlider(&roomSizeSlider);
-  configureSlider(&dampingSlider);
-  configureSlider(&wetLevelSlider);
-  configureSlider(&dryLevelSlider);
-  configureSlider(&widthLevelSlider);
-  configureSlider(&freezeSlider);
+  configureSlider(&roomSizeSlider, " roomSize", 0.5f);
+  configureSlider(&dampingSlider, " damping", 0.5f);
+  configureSlider(&wetLevelSlider, " wet", 0.33f);
+  configureSlider(&dryLevelSlider, " dry", 0.4f);
+  configureSlider(&widthLevelSlider," width", 1.0f);
+  configureSlider(&freezeSlider, " freeze", 0.0f);
 
   addAndMakeVisible(roomSizeSlider);
   addAndMakeVisible(dampingSlider);
@@ -51,8 +51,8 @@ void ReverbKnobs::paint (juce::Graphics& g)
     g.drawRect (getLocalBounds(), 1);   // draw an outline around the component
 
     g.setColour (juce::Colours::white);
-    g.setFont (14.0f);
-    g.drawText ("ReverbKnobs", getLocalBounds(),
+    g.setFont (10.0f);
+    g.drawText ("", getLocalBounds(),
                 juce::Justification::centred, true);   // draw some placeholder text
 }
 
@@ -105,11 +105,13 @@ void ReverbKnobs::sliderValueChanged (juce::Slider* slider)
     }
 }
 
-void ReverbKnobs::configureSlider(juce::Slider* slider)
+void ReverbKnobs::configureSlider(juce::Slider* slider, std::string suffix, float startValue)
     {
       slider->addListener(this);
       slider->setRange(0.0, 1.0);
       slider->setSliderStyle(juce::Slider::Rotary);
       slider->setNumDecimalPlacesToDisplay(2);
       slider->setTextBoxStyle(juce::Slider::TextBoxBelow, false, 100, 20);
+      slider->setTextValueSuffix(suffix);
+      slider->setValue(startValue);
     }
