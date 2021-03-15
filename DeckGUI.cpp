@@ -15,57 +15,44 @@
 DeckGUI::DeckGUI(DJAudioPlayer* _player,
                 juce::AudioFormatManager& formatManagerToUse,
                 juce::AudioThumbnailCache& cacheToUse,
-                ReverbKnobs* _reverbKnobs
+                ReverbKnobs* _reverbKnobs,
+                int _guiID
                 ) : player(_player),
                     waveformDisplay(formatManagerToUse, cacheToUse),
-                    reverbKnobs(_reverbKnobs)
+                    reverbKnobs(_reverbKnobs),
+                    guiID(_guiID)
 {
     // In your constructor, you should add any child components, and
     // initialise any special settings that your component needs.
 
     addAndMakeVisible(playButton);
     addAndMakeVisible(stopButton);
+    addAndMakeVisible(rewindButton);
+    addAndMakeVisible(forwardButton);
     addAndMakeVisible(loadButton);
-
     addAndMakeVisible(volSlider);
     addAndMakeVisible(speedSlider);
     addAndMakeVisible(posSlider);
-    // addAndMakeVisible(roomSizeSlider);
-
     addAndMakeVisible(waveformDisplay);
     addAndMakeVisible(reverbKnobs);
+    addAndMakeVisible(infoDisplay);
 
     playButton.addListener(this);
     stopButton.addListener(this);
+    rewindButton.addListener(this);
+    forwardButton.addListener(this);
     loadButton.addListener(this);
     volSlider.addListener(this);
     speedSlider.addListener(this);
     posSlider.addListener(this);
-    // roomSizeSlider.addListener(this);
 
-    volSlider.setRange(0.0, 1.0);
-    speedSlider.setRange(0.0, 100.0);
-    posSlider.setRange(0.0, 1.0);
-    // roomSizeSlider.setRange(0.0, 1.0);
-
-    volSlider.setSliderStyle (juce::Slider::LinearVertical);
-    speedSlider.setSliderStyle (juce::Slider::LinearVertical);
-    // roomSizeSlider.setSliderStyle (juce::Slider::Rotary);
-
-    posSlider.setSliderStyle (juce::Slider::LinearHorizontal);
-    
-    volSlider.setTextValueSuffix(" Volume");
-    speedSlider.setTextValueSuffix("x Speed");
-    posSlider.setTextValueSuffix("pos");
-
-    volSlider.setNumDecimalPlacesToDisplay(4);
-    speedSlider.setNumDecimalPlacesToDisplay(4);
-    posSlider.setNumDecimalPlacesToDisplay(4);
-    // roomSizeSlider.setNumDecimalPlacesToDisplay(4);
-
-    volSlider.setTextBoxStyle(juce::Slider::TextBoxBelow, false, 100, 20);
-    speedSlider.setTextBoxStyle(juce::Slider::TextBoxBelow, false, 100, 20);
-    // roomSizeSlider.setTextBoxStyle(juce::Slider::TextBoxBelow, false, 100, 20);
+    configureSlider(&volSlider, true, " Volume", 0.0, 1.0, 0.7);
+    configureSlider(&speedSlider, true, "x Speed", 0.1, 10.0, 1.0);
+    configureSlider(&posSlider, false, " Pos", 0.0, 1.0, 0.0);
+   
+    // Initialize information display messages
+    displayMessage = juce::String {"Deck " + std::to_string(guiID) + "\n" + "Track: "};
+    infoDisplay.setText(displayMessage, juce::NotificationType::dontSendNotification);
 
     startTimer(500);
 }
@@ -91,7 +78,7 @@ void DeckGUI::paint (juce::Graphics& g)
 
     g.setColour (juce::Colours::white);
     g.setFont (14.0f);
-    g.drawText ("DeckGUI", getLocalBounds(),
+    g.drawText ("", getLocalBounds(),
                 juce::Justification::centred, true);   // draw some placeholder text
 }
 
@@ -100,25 +87,23 @@ void DeckGUI::resized()
     // This method is where you should set the bounds of any child
     // components that your component contains..
 
-    double rowH = getHeight() / 8;
+    double rowH = getHeight() / 10;
 
-    playButton.setBounds(0, 0, getWidth(), rowH);
-    stopButton.setBounds(0, rowH, getWidth(), rowH);
+    infoDisplay.setBounds(0, 0, getWidth(), rowH);
 
-    volSlider.setBounds(0, rowH * 2, getWidth()/3, rowH * 3);
-    speedSlider.setBounds(getWidth() * 1/3, rowH * 2, getWidth()/3, rowH * 3);
-    // roomSizeSlider.setBounds(getWidth() * 2/3, rowH * 2, getWidth()/3, rowH);
+    playButton.setBounds(getWidth()/4, rowH, getWidth()/2, rowH * 2/3 );
+    loadButton.setBounds(getWidth()/4, rowH*5/3, getWidth()/2, rowH * 2/3 );    
+    stopButton.setBounds(getWidth()/4, rowH*7/3, getWidth()/2, rowH * 2/3 );
 
-    // volSlider.setBounds(0, rowH * 2, getWidth(), rowH);
-    // speedSlider.setBounds(0, rowH * 3, getWidth(), rowH);
-    // posSlider.setBounds(0, rowH * 4, getWidth(), rowH);
+    rewindButton.setBounds(0, rowH, getWidth()/4, rowH * 2 );
+    forwardButton.setBounds(getWidth() * 3/4, rowH, getWidth()/4, rowH * 2 );
 
-    posSlider.setBounds(0, rowH * 5, getWidth(), rowH);    
-    waveformDisplay.setBounds(0, rowH * 6, getWidth(), rowH * 2);
-    reverbKnobs->setBounds(getWidth() * 2/3, rowH * 2, getWidth()/3, rowH * 3);
-    
-    
-    // loadButton.setBounds(0, rowH * 7, getWidth(), rowH);    
+    volSlider.setBounds(0, rowH * 3, getWidth()/4, rowH * 4 );
+    speedSlider.setBounds(getWidth() * 1/4, rowH * 3, getWidth()/4, rowH * 4 );
+    reverbKnobs->setBounds(getWidth() * 2/4, rowH * 3, getWidth() * 2/4, rowH * 4 );
+
+    posSlider.setBounds(0, rowH * 7, getWidth(), rowH);    
+    waveformDisplay.setBounds(0, rowH * 8, getWidth(), rowH * 2 );
 }
 
 void DeckGUI::buttonClicked(juce::Button* button)
@@ -134,6 +119,16 @@ void DeckGUI::buttonClicked(juce::Button* button)
         std::cout << "Stop button was clicked " << std::endl;
         player->stop();
     }
+    if (button == &rewindButton)
+    {
+        std::cout << "Rewind button was clicked " << std::endl;
+        player->setRewindPosition();
+    }
+    if (button == &forwardButton)
+    {
+        std::cout << "Forward button was clicked " << std::endl;
+        player->setForwardPosition();
+    }
     if (button == &loadButton)
     {
         std::cout << "Load button was clicked " << std::endl;
@@ -142,6 +137,8 @@ void DeckGUI::buttonClicked(juce::Button* button)
         {
             player->loadURL(juce::URL {chooser.getResult()});
             waveformDisplay.loadURL(juce::URL {chooser.getResult()});
+            infoDisplay.setText(displayMessage + chooser.getResult().getFileName(),
+                                juce::NotificationType::dontSendNotification); // update info display
         }
     }
 }
@@ -165,11 +162,6 @@ void DeckGUI::sliderValueChanged(juce::Slider* slider)
         std::cout << "speed slider moved "  << slider->getValue() << std::endl;
         player->setPositionRelative(slider->getValue());
     }
-    // if (slider == &roomSizeSlider)    
-    // {   
-    //     std::cout << "rotary slider moved "  << slider->getValue() << std::endl;
-    //     player->setRoomSize(float(slider->getValue()));
-    // }
 }
 
 bool DeckGUI::isInterestedInFileDrag (const StringArray &files)
@@ -185,6 +177,8 @@ void DeckGUI::filesDropped (const StringArray &files, int x, int y)
   {
     player->loadURL(juce::URL{juce::File{files[0]}});
     waveformDisplay.loadURL(juce::URL{juce::File{files[0]}});
+    infoDisplay.setText(displayMessage + juce::File{files[0]}.getFileName(),
+                        juce::NotificationType::dontSendNotification); // update info display
   }
 }
 
@@ -197,4 +191,24 @@ void DeckGUI::loadTrack(juce::URL sourceURL)
 {
     player->loadURL(sourceURL);
     waveformDisplay.loadURL(sourceURL);
+    infoDisplay.setText(displayMessage + sourceURL.getFileName(),
+                        juce::NotificationType::dontSendNotification); // update info display
+}
+
+void DeckGUI::configureSlider(juce::Slider* slider, bool verticalSlider, std::string suffix,
+                              double minRange, double maxRange, double initValue)
+{
+    slider->setRange(minRange, maxRange);    
+    slider->setValue(initValue);
+
+    if (verticalSlider)
+    {
+        slider->setSliderStyle (juce::Slider::LinearVertical);
+        slider->setTextBoxStyle(juce::Slider::TextBoxBelow, false, 100, 20);
+    }
+    else {
+        slider->setSliderStyle (juce::Slider::LinearHorizontal);    
+    }
+    slider->setTextValueSuffix(suffix);
+    slider->setNumDecimalPlacesToDisplay(2);
 }

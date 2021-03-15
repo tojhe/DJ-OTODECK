@@ -14,7 +14,7 @@
 #include "DJAudioPlayer.h"
 #include "WaveformDisplay.h"
 #include "ReverbKnobs.h"
-
+#include <string>
 //==============================================================================
 /*
 */
@@ -28,7 +28,9 @@ public:
     DeckGUI(DJAudioPlayer* player, 
             juce::AudioFormatManager& formatManagerToUse,
             juce::AudioThumbnailCache& cacheToUse,
-            ReverbKnobs* reverbKnobs);
+            ReverbKnobs* reverbKnobs,
+            int guiID
+            );
     ~DeckGUI() override;
 
     void paint (juce::Graphics&) override;
@@ -48,20 +50,30 @@ public:
     void loadTrack(juce::URL sourceURL);
  
 private:
+
+    /** Configure slider at initialization */
+    void configureSlider(juce::Slider* slider, bool verticalSlider, std::string suffix,
+                         double minRange, double maxRange, double initValue);
+
     juce::TextButton playButton{"PLAY"};
     juce::TextButton stopButton{"STOP"};
+    juce::TextButton rewindButton{"<<REWIND"};
+    juce::TextButton forwardButton{"FORWARD>>"};
     juce::TextButton loadButton{"LOAD"};
+    juce::Label infoDisplay {{}, ""};
     
     juce::Slider volSlider;
     juce::Slider speedSlider;
     juce::Slider posSlider;
-    // juce::Slider roomSizeSlider;
 
     DJAudioPlayer* player;
 
     WaveformDisplay waveformDisplay;
     
     ReverbKnobs* reverbKnobs;
+
+    int guiID;
+    juce::String displayMessage;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (DeckGUI)
 };
