@@ -37,7 +37,7 @@ class DJAudioPlayer : public juce::AudioSource {
 
     /** get the relative position of the playhead*/
     double getPositionRelative();
-    
+    /** get the length of Audio source in seconds*/
     double getLengthInSeconds();
 
     /** Rewind track  by 5 sec*/

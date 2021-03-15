@@ -56,13 +56,15 @@ public:
                                                int columnId,
                                                bool isRowSelected,
                                                juce::Component *existingComponentToUpdate) override;
-                            
+    /** Called when the button is clicked*/                            
     void buttonClicked(juce::Button* button) override;
 
 
 private:
 
+    /** save playlist tracks' absolute file paths in external text file*/
     void saveTracks();
+    /** load previously saved tracks with file paths stored in external text file*/
     void loadTracks();
     /** convert track length from seconds to min:sec in string */
     std::string secondsToMinutes(double seconds);

@@ -39,6 +39,7 @@ private:
     DJAudioPlayer player1{formatManager};
     ReverbKnobs reverbKnobs1{&player1};
     DeckGUI deckGUI1 {&player1, formatManager, thumbCache, &reverbKnobs1, 1};
+    
     DJAudioPlayer player2{formatManager};
     ReverbKnobs reverbKnobs2{&player2};
     DeckGUI deckGUI2 {&player2, formatManager, thumbCache, &reverbKnobs2, 2};

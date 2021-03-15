@@ -27,9 +27,8 @@ public:
     void resized() override;
 
     void changeListenerCallback (juce::ChangeBroadcaster *source) override;
-
+    /** load source from URL to generate audio thumbnail */
     void loadURL (juce::URL audioURL);
-
     /** set the relative position of the playhead**/
     void setPositionRelative(double pos);
 

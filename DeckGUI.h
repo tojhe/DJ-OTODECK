@@ -38,15 +38,14 @@ public:
 
     /** implement Button::Listener **/
     void buttonClicked (juce::Button *) override;
-    
     /** implement Slider::Listener */
     void sliderValueChanged (juce::Slider *slider) override;
-
+    /** Callback to check whether this target is interested in the set of files being offered */
     bool isInterestedInFileDrag (const StringArray &files) override;
+    /** Callback to indicate that the user has dropped the files onto this component */
     void filesDropped (const StringArray &files, int x, int y) override;
-
     void timerCallback() override;
-
+    /** load Track from URL, to be used with tracks added from playlist component*/
     void loadTrack(juce::URL sourceURL);
  
 private:
