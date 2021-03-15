@@ -94,6 +94,34 @@ void DJAudioPlayer::setPosition(double posInSecs)
   transportSource.setPosition(posInSecs);
 }
 
+void DJAudioPlayer::setRewindPosition()
+{
+  double currentPositionSeconds = transportSource.getCurrentPosition();
+  if (currentPositionSeconds > 5.0)
+  {
+    setPosition(currentPositionSeconds - 5.0);
+  }
+  else
+  {
+    setPosition(0.0);
+  }
+}
+
+void DJAudioPlayer::setForwardPosition()
+{
+  double currentPositionSeconds = transportSource.getCurrentPosition();
+  double newForwardPosition = currentPositionSeconds + 5.0;
+  double audioTrackLength = getLengthInSeconds();
+  if (newForwardPosition > audioTrackLength)
+  { 
+    setPosition(audioTrackLength);
+  }
+  else {
+    setPosition(newForwardPosition);
+  }
+
+}
+
 void DJAudioPlayer::setPositionRelative(double pos)
 {
   if (pos < 0 || pos > 1.0)

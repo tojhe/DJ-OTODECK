@@ -37,7 +37,13 @@ class DJAudioPlayer : public juce::AudioSource {
 
     /** get the relative position of the playhead*/
     double getPositionRelative();
+    
     double getLengthInSeconds();
+
+    /** Rewind track  by 5 sec*/
+    void setRewindPosition();
+    /** Fast forward track by 5 sec*/
+    void setForwardPosition();
 
     void start();
     void stop();
@@ -45,6 +51,7 @@ class DJAudioPlayer : public juce::AudioSource {
   private:
     juce::AudioFormatManager& formatManager;
     std::unique_ptr<juce::AudioFormatReaderSource> readerSource;
+
     juce::AudioTransportSource transportSource;
     juce::ResamplingAudioSource resampleSource {&transportSource, false, 2};
     juce::ReverbAudioSource reverbSource {&resampleSource, false};
