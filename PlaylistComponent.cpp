@@ -31,6 +31,7 @@ PlaylistComponent::PlaylistComponent(DJAudioPlayer* _player,
 
     playlist.setModel(this);
 
+    // Configure search field
     searchField.applyFontToAllText(juce::Font{14.0f});
     searchField.setJustification(juce::Justification::centred);
     searchField.setTextToShowWhenEmpty("SEARCH PLAYLIST (ESC KEY TO CLEAR)", juce::Colours::orange);
@@ -43,6 +44,7 @@ PlaylistComponent::PlaylistComponent(DJAudioPlayer* _player,
     importButton.addListener(this);
     searchField.addListener(this);
 
+    // Search field behaviour
     searchField.onTextChange = [this]{searchPlaylist(searchField.getText());};
     searchField.onEscapeKey = [this]{searchField.clear(); playlist.deselectAllRows();};
 
@@ -51,7 +53,7 @@ PlaylistComponent::PlaylistComponent(DJAudioPlayer* _player,
 
 PlaylistComponent::~PlaylistComponent()
 {
-  saveTracks();
+    saveTracks();
 }
 
 void PlaylistComponent::paint (juce::Graphics& g)
@@ -280,7 +282,6 @@ void PlaylistComponent::handleTrackButtons(juce::String buttonClicked, int id)
 
 void PlaylistComponent::searchPlaylist(juce::String inputText)
 {
-  // searching algorithm http://www.cplusplus.com/reference/algorithm/search/
   int matchingTrackId;
   for (int i=0; i < tracks.size(); i++)
   {
@@ -296,43 +297,44 @@ void PlaylistComponent::saveTracks()
 {
   // save tracks filepaths to tracks_file.csv
   std::ofstream savedTracksFile;
-  savedTracksFile.open("./tracks_file.csv");
+  savedTracksFile.open("tracks_file.txt");
   for (AudioTrack& track : tracks)
-  {
-      savedTracksFile << track.trackFile.getFullPathName() << "\n";
-      std::cout << "Saving " << track.trackFile.getFullPathName() << std::endl;
+  {   
+      // std::string filePath = track.trackFile.getFullPathName().toStdString();
+      savedTracksFile << track.trackFile.getFullPathName() << std::endl;
   }
   savedTracksFile.close();
 }
 
 void PlaylistComponent::loadTracks()
 {
-  // create input stream from saved library
-  std::ifstream savedTracksFile;
+  std::ifstream savedTracksFile("tracks_file.txt");
   std::string filePath;
-  std::string length;
 
-  savedTracksFile.open("./tracks_file.csv");
   // Parse data
-  while (getline(savedTracksFile, filePath)) {
+  if (savedTracksFile.is_open())
+  {
+    while (savedTracksFile) {
+      // Parse each line
+      std::getline(savedTracksFile, filePath);
+      // load track
+      if (filePath != "")
+      {
+        juce::File file {filePath};
+        AudioTrack track {file};
 
-    std::cout << "Getting " << filePath << std::endl;
-    // load track
-    juce::File file {filePath};
-    AudioTrack track {file};
+        // update length attribute
+        player->loadURL(track.sourceURL);
+        double lengthInSeconds = player->getLengthInSeconds();
+        track.length = secondsToMinutes(lengthInSeconds);
 
-    // update length attribute
-    player->loadURL(track.sourceURL);
-    double lengthInSeconds = player->getLengthInSeconds();
-    track.length = secondsToMinutes(lengthInSeconds);
-
-    // push to tracks playlist
-    tracks.push_back(track);
-    std::cout << "LOADED " << filePath << std::endl;
+        // push to tracks playlist
+        tracks.push_back(track);
+        std::cout << "LOADED " << filePath << std::endl;
+      }
+      
+    }
   }
-  
-   savedTracksFile.close();
-
-  remove ("tracks_file.csv");
+  savedTracksFile.close();
   playlist.updateContent();
 }

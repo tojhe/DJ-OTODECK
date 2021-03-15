@@ -64,8 +64,13 @@ private:
 
     void saveTracks();
     void loadTracks();
+    /** convert track length from seconds to min:sec in string */
     std::string secondsToMinutes(double seconds);
+
+    /** search tracks on playlist by name */
     void searchPlaylist(juce::String inputText);
+
+    /** Logical operators for buttons clicked on playlist table */
     void handleTrackButtons(juce::String buttonClicked, int id);
 
     juce::TableListBox playlist;
